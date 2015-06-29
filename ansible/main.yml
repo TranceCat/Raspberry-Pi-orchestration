@@ -1,0 +1,58 @@
+---
+#- include: playbooks/upgrade.yml
+- hosts: rpi
+  gather_facts: no
+  sudo: no
+
+  vars_files:
+    - vars/path.yml
+    - vars/apache_packages.yml
+
+  tasks:
+
+   - name: Update apt cache.
+     apt: update_cache=yes cache_valid_time=86400
+
+   - name: Ensure Apache is installed.
+     apt: "name={{ item }} state=installed"
+     with_items: apache_packages
+
+   - shell: ls -1 /etc/apache2/sites-enabled
+     register: contents
+
+   - file: path=/etc/apache2/sites-enabled/{{ item }} state=absent
+     with_items: contents.stdout_lines
+
+   - name: Copy files 
+     copy: src={{ item.src }}  dest={{ item.dst }}
+     with_items:
+        - {src: files/usr/lib/cgi-bin/, dst: /usr/lib/cgi-bin/  }
+        - {src: files/var/www/ , dst: /var/www/}
+
+   - name: Permissions
+     file: path={{ item.pth }} owner={{ item.own }} group={{ item.grp }} mode=0777 recurse=yes
+     with_items:
+        - {pth: /usr/lib/cgi-bin/  , own: www-data   , grp: www-data  }
+        - {pth: /var/www/     , own: www-data , grp: www-data  }
+   - cron: name="run monitor" minute="5" user="root" job="/usr/lib/cgi-bin/monitor.py" state=absent
+
+   - name: Add apache vhosts configuration.
+     template:
+        src: "templates/vhosts2.conf.j2"
+        dest: "/etc/apache2/sites-available/test.conf"
+        owner: root
+        group: root
+        mode: 0644
+
+   - name: Add vhost symlink in sites-enabled.
+     file:
+        src: "/etc/apache2/sites-available/test.conf"
+        dest: "/etc/apache2/sites-enabled/test.conf"
+        state: link
+#uncomment for debian jessie
+   - name: activate cgi
+     command: a2enmod cgi
+
+   - name: restart apache
+     action: service name=apache2 state=restarted
+

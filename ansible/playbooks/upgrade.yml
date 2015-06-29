@@ -1,0 +1,8 @@
+- hosts: all
+  gather_facts: no
+  sudo: no
+  tasks:
+   - name: updates a server
+     apt: update_cache=yes cache_valid_time=3600
+   - name: upgrade a server
+     apt: upgrade=yes

@@ -1,0 +1,39 @@
+In this instructuble I would like to share my personal work-flow for working with headless RPis.
+You can use this as a basic guod for setting up raspberry pi or deploy your apps to it.
+
+Short history
+
+I love RPi as a fast way to solve personal problems. Make a media center, maybe a internet radio, NAS ro whatever.
+I never tried runing any desktop on RPi or connected keyboard to it. But to use it this way is not alwasy easy. 
+The fastest way I found was to use Google Coder project. It was so fast. Burn the image to SD card and connect ethernet cable or WiFi dongl and you are good to go. But as all raspbian solutions it needs 4 Gb sd card. I try to re use old cards or make projects as small as possible. 
+
+
+What I did for myself is a Frenkenstein of different projects to make it possible to find all the respberry pi's on the network, install any distro of your choice to sd card or USB flashdrive and them provission it as you need. And if you have apps to deploy you can do it too.
+
+So the first problem is how to detect RPi on the network. There are many options.
+nmap – very nice network tool. You can scan network and show host names for each device. If you install Raspbian or other RPi distro there's a default host name assigned to it.
+problem is that nmap doesnt come pre installed on mac or windows, and not all Linux distro have it.
+
+There is a tool from adafruit that does search for you, but it's big and well too much for the task.
+
+You can always login to your router and see the ip addresses for the connected devices.
+
+----------------
+My intent was to have detection as the first stage to a list of actions against RPi so I wanted to make it as simple as possible so I used 'arp'. It's a networking tool that is installed on almost all the platforms I could reach to(Windos, Mac, debian, fedora).
+There is a catch, ofcourse, that output for 'arp -a'  comand is different on those platforms and before you can run it you have to check for the os and fill the ARP table by 'pinging' the network.
+With the aoutput availible I just searched for the partial MAC address of the ethernet port which is "b8:27:eb".
+If you have wifi connected RPi than you have to get mac adress for the wifi dong you are using and add to the script.
+-----------------
+Ok, now we have ip adresses for all the RPis we have on the network. Next is the OS.
+I like to start with barebones systems. But you can actualy decide what to install on the RPi.
+
+There is project called raspbian-ua-netinstall. it uses modified raspbian bootloader to install nessesery files on the RPi. you can define what packages you need and it will install it, minor problem is that it downloads it from raspbian repository. If you want to install many raspberry pis or you will re-install them very often it is best to create local copy of repository for packages you use most. Or as an option you can create a base image once and re-use it.
+
+----------------
+ok, we have os instaled on the RPi and found it on network, what we do now. well, it depends on what you need. I use ansible provisioning tool to install spesific pacages on spesific machine and do different tasks depending on the role I wish that particular RPi will asume. One of the first things I do is create ssh key files for all of the RPis and distrebute them and make RPi acsesible only with ssh key.
+
+
+You can also use ansible to re-install your OS by creating a task for it.
+-----------------
+I use my old app for temperature logging as an example of what type of tasks you can perform with ansible
+

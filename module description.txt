@@ -1,0 +1,58 @@
+rpi_detector
+	- dicovery module, use any way to detect ip by partial mac address 
+	- use the ip to create ansible inventory
+    optional
+    	- test for standard login methods # integrated in rpi_ssh
+    	    - ssh with password
+    	    - ssh with key
+-----------------------------------------------------------------------------------------------------------
+
+rpi_inventory
+	- use detector to get _list_ of Rpis
+	- rpi_ssh
+	- generate ansible inventory based on a template
+	    - use templates for role definition
+	    - 
+-----------------------------------------------------------------------------------------------------------
+rpi_ssh
+	- test for default ssh login methods
+	   - ssh with password
+	       if true continue to switch to key, else ssh with key
+    	   - ssh with key
+    	       if policy mandates switch to key, else exit
+    	- switch to key
+    	    - use pre-defined root key
+    	    - generate root key
+    	# if used for key deployment use this strategy
+	- generate keys based on the _list_ for root
+	- generate keys for defined users
+	- generate authorised_keys files 
+	- copy to defined folders
+-----------------------------------------------------------------------------------------------------------
+rpi_create # will be used to deploy OS on raspberry pi with netinstaller
+	- use template to generate
+	    - installer-config.txt
+	    - post-install.txt
+	- copy needed files (authorized-keys, hosts, rules etc.)
+	- update/change boot-loader
+	- if local repository is used verify accessibility, update and verify needed packages
+	- restart all affected machines to start creation process
+	    - use base image  if available
+-----------------------------------------------------------------------------------------------------------
+
+rpi_provission
+    if used as stand alone app:
+        - rpi_detector
+        - rpi_inventory
+    else
+        - run update, upgrade playbook
+        - run role provision playbooks
+
+rpi_deploy
+    - playbook for environment verification
+    - playbook for deployment
+    - playbook for deployment verification
+
+rpi_monitor
+    - monitor demon for controlling cluster status
+    - failure detection and re-install
