@@ -50,8 +50,8 @@
         dest: "/etc/apache2/sites-enabled/test.conf"
         state: link
 #uncomment for debian jessie
-   - name: activate cgi
-     command: a2enmod cgi
+#   - name: activate cgi
+#     command: a2enmod cgi
 
    - name: restart apache
      action: service name=apache2 state=restarted

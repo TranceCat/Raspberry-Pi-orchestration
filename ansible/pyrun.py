@@ -26,7 +26,7 @@ out = pm.run()
 print json.dumps(out, sort_keys=True, indent=4, separators=(',', ': '))
 
 
-#
+# run playbooks
 #pb = ansible.playbook.PlayBook(
 #	playbook= "./main.yml",
 #	callbacks=playbook_cb,
